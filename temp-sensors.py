@@ -1,4 +1,4 @@
-#!/home/pi/1Temp/.venv/bin/python3
+#!/home/pi/1TEMP/.venv/bin/python3
 
 from time import sleep, perf_counter
 import board, logging
