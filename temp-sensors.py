@@ -102,7 +102,7 @@ def main():
 
     #==== HARDWARE SETUP ===============# 
     led1 = LED(27)
-    freezer1DHT = adafruit_dht.DHT11(board.D18, use_pulseio=False) # pulseio false for RPi
+    freezer1DHT = adafruit_dht.DHT22(board.D18, use_pulseio=False) # pulseio false for RPi
 
     #====   SETUP MQTT =================#
     # Check for wifi connection. Using hostname for MQTT_SERVER so IP address is not necessary but can be useful.
