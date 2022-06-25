@@ -1,0 +1,854 @@
+[
+    {
+        "id": "f9086e97138d9339",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "c5fc11e8ad263748",
+        "type": "group",
+        "z": "f9086e97138d9339",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "21214eeca3aa5b2e"
+        ],
+        "x": 494,
+        "y": 19,
+        "w": 332,
+        "h": 82
+    },
+    {
+        "id": "aef2779e5e7d7e54",
+        "type": "group",
+        "z": "f9086e97138d9339",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "5fe41304b1017dbf",
+            "fdcb2f99f0136582",
+            "ca6362b40ee71b24",
+            "f865a3a1361bb6dc",
+            "5595d2f30d220513",
+            "b0305e3b8d08290e",
+            "96cfa0b7d09f3843",
+            "91b20907ef68dd48",
+            "9d5784c9f6cd3a28",
+            "3b0e7b85ba7c224f"
+        ],
+        "x": 14,
+        "y": 619,
+        "w": 1312,
+        "h": 142
+    },
+    {
+        "id": "967f244e78827ebf",
+        "type": "mqtt in",
+        "z": "f9086e97138d9339",
+        "name": "",
+        "topic": "trailer/freezer1/data",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "126ea320118c22af",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 110,
+        "y": 140,
+        "wires": [
+            [
+                "0c1bff8e926cc0de"
+            ]
+        ]
+    },
+    {
+        "id": "0c1bff8e926cc0de",
+        "type": "function",
+        "z": "f9086e97138d9339",
+        "name": "parse MQTT JSON str",
+        "func": "var pTopic  = msg.topic.split(\"/\");\nvar jsonObj   =JSON.parse(msg.payload);\nvar fields = {};\nvar tags = {location:pTopic[0], device:pTopic[1]};\nfor(var item in jsonObj){\n    if (item.endsWith('f')) {\n        fields[item] = parseFloat(jsonObj[item]);\n    }\n    if (item.endsWith('i')) {\n        fields[item] = parseInt(jsonObj[item]);\n    }\n}\nmsg.payload = [\n    fields,\n    tags\n];    \nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 140,
+        "wires": [
+            [
+                "21214eeca3aa5b2e",
+                "d0e7591792357b70",
+                "d6e8f22491220b49"
+            ]
+        ]
+    },
+    {
+        "id": "21214eeca3aa5b2e",
+        "type": "influxdb out",
+        "z": "f9086e97138d9339",
+        "g": "c5fc11e8ad263748",
+        "influxdb": "6006ea813af8600e",
+        "name": "",
+        "measurement": "data",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "test",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "organisation",
+        "bucket": "bucket",
+        "x": 660,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "5fe41304b1017dbf",
+        "type": "ui_chart",
+        "z": "f9086e97138d9339",
+        "g": "aef2779e5e7d7e54",
+        "name": "",
+        "group": "bf502ea446d0e5ee",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "Freezer 1 Temp History",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "dd HH:mm",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "-10",
+        "ymax": "auto",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1170,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fdcb2f99f0136582",
+        "type": "influxdb in",
+        "z": "f9086e97138d9339",
+        "g": "aef2779e5e7d7e54",
+        "influxdb": "3e3327aa.370598",
+        "name": "",
+        "query": "",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "organisation",
+        "x": 570,
+        "y": 660,
+        "wires": [
+            [
+                "f865a3a1361bb6dc"
+            ]
+        ]
+    },
+    {
+        "id": "ca6362b40ee71b24",
+        "type": "function",
+        "z": "f9086e97138d9339",
+        "g": "aef2779e5e7d7e54",
+        "name": "flux query (v1.8+)",
+        "func": "msg.query = 'from(bucket: \"test/autogen\")|> range(start: -' + msg.payload + ')|> filter(fn: (r) =>r._measurement == \"data\" and r._field == \"tempFf\" and r.device == \"freezer1\")';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 660,
+        "wires": [
+            [
+                "fdcb2f99f0136582"
+            ]
+        ]
+    },
+    {
+        "id": "f865a3a1361bb6dc",
+        "type": "function",
+        "z": "f9086e97138d9339",
+        "g": "aef2779e5e7d7e54",
+        "name": "Convert flux query result to JSON format",
+        "func": "// Convert flux query result to JSON format for charting\n// Built from https://funprojects.blog/\n\nvar series = [\"series\"];\nvar labels = [\"labels\"];\nvar data = \"[[\";\nvar dateTime;\n\n// Flux query will send msg.payload[i]._time as a string. Can not use NUMBER() function to convert it to epoch time.\n// (can use msg.varA-Type = typeof varA to check)\n\nfor (var i=0; i < msg.payload.length; i++) {\n    dateTime = Date.parse(msg.payload[i]._time); // Date.parse will convert date to unix epoch time. ie 1614630735\n    data += '{ \"x\":' + dateTime + ', \"y\":' + msg.payload[i]._value + '}';\n    if (i < (msg.payload.length - 1)) {\n        data += \",\"\n    } else {\n        data += \"]]\"\n    }\n}\nvar jsondata = JSON.parse(data);\nmsg.payload = [{\"series\": series, \"data\": jsondata, \"labels\": labels}];\nmsg.playload = data;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 660,
+        "wires": [
+            [
+                "5fe41304b1017dbf"
+            ]
+        ]
+    },
+    {
+        "id": "5595d2f30d220513",
+        "type": "ui_dropdown",
+        "z": "f9086e97138d9339",
+        "g": "aef2779e5e7d7e54",
+        "name": "",
+        "label": "Date Range",
+        "tooltip": "",
+        "place": "1d",
+        "group": "bf502ea446d0e5ee",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "multiple": false,
+        "options": [
+            {
+                "label": "",
+                "value": "15m",
+                "type": "str"
+            },
+            {
+                "label": "",
+                "value": "30m",
+                "type": "str"
+            },
+            {
+                "label": "",
+                "value": "1h",
+                "type": "str"
+            },
+            {
+                "label": "",
+                "value": "12h",
+                "type": "str"
+            },
+            {
+                "label": "",
+                "value": "1d",
+                "type": "str"
+            },
+            {
+                "label": "",
+                "value": "2d",
+                "type": "str"
+            },
+            {
+                "label": "",
+                "value": "7d",
+                "type": "str"
+            },
+            {
+                "label": "",
+                "value": "30d",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "",
+        "topicType": "str",
+        "className": "",
+        "x": 110,
+        "y": 660,
+        "wires": [
+            [
+                "ca6362b40ee71b24"
+            ]
+        ]
+    },
+    {
+        "id": "b0305e3b8d08290e",
+        "type": "function",
+        "z": "f9086e97138d9339",
+        "g": "aef2779e5e7d7e54",
+        "name": "flux query (v1.8+)",
+        "func": "msg.query = 'from(bucket: \"test/autogen\")|> range(start: -' + msg.payload + ')|> filter(fn: (r) =>r._measurement == \"data\" and r._field == \"humidityi\" and r.device == \"freezer1\")';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 720,
+        "wires": [
+            [
+                "91b20907ef68dd48"
+            ]
+        ]
+    },
+    {
+        "id": "96cfa0b7d09f3843",
+        "type": "ui_dropdown",
+        "z": "f9086e97138d9339",
+        "g": "aef2779e5e7d7e54",
+        "name": "",
+        "label": "Date Range",
+        "tooltip": "",
+        "place": "1d",
+        "group": "bf502ea446d0e5ee",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "multiple": false,
+        "options": [
+            {
+                "label": "",
+                "value": "15m",
+                "type": "str"
+            },
+            {
+                "label": "",
+                "value": "30m",
+                "type": "str"
+            },
+            {
+                "label": "",
+                "value": "1h",
+                "type": "str"
+            },
+            {
+                "label": "",
+                "value": "12h",
+                "type": "str"
+            },
+            {
+                "label": "",
+                "value": "1d",
+                "type": "str"
+            },
+            {
+                "label": "",
+                "value": "2d",
+                "type": "str"
+            },
+            {
+                "label": "",
+                "value": "7d",
+                "type": "str"
+            },
+            {
+                "label": "",
+                "value": "30d",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "",
+        "topicType": "str",
+        "className": "",
+        "x": 110,
+        "y": 720,
+        "wires": [
+            [
+                "b0305e3b8d08290e"
+            ]
+        ]
+    },
+    {
+        "id": "91b20907ef68dd48",
+        "type": "influxdb in",
+        "z": "f9086e97138d9339",
+        "g": "aef2779e5e7d7e54",
+        "influxdb": "3e3327aa.370598",
+        "name": "",
+        "query": "",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "organisation",
+        "x": 570,
+        "y": 720,
+        "wires": [
+            [
+                "9d5784c9f6cd3a28"
+            ]
+        ]
+    },
+    {
+        "id": "9d5784c9f6cd3a28",
+        "type": "function",
+        "z": "f9086e97138d9339",
+        "g": "aef2779e5e7d7e54",
+        "name": "Convert flux query result to JSON format",
+        "func": "// Convert flux query result to JSON format for charting\n// Built from https://funprojects.blog/\n\nvar series = [\"series\"];\nvar labels = [\"labels\"];\nvar data = \"[[\";\nvar dateTime;\n\n// Flux query will send msg.payload[i]._time as a string. Can not use NUMBER() function to convert it to epoch time.\n// (can use msg.varA-Type = typeof varA to check)\n\nfor (var i=0; i < msg.payload.length; i++) {\n    dateTime = Date.parse(msg.payload[i]._time); // Date.parse will convert date to unix epoch time. ie 1614630735\n    data += '{ \"x\":' + dateTime + ', \"y\":' + msg.payload[i]._value + '}';\n    if (i < (msg.payload.length - 1)) {\n        data += \",\"\n    } else {\n        data += \"]]\"\n    }\n}\nvar jsondata = JSON.parse(data);\nmsg.payload = [{\"series\": series, \"data\": jsondata, \"labels\": labels}];\nmsg.playload = data;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 720,
+        "wires": [
+            [
+                "3b0e7b85ba7c224f"
+            ]
+        ]
+    },
+    {
+        "id": "3b0e7b85ba7c224f",
+        "type": "ui_chart",
+        "z": "f9086e97138d9339",
+        "g": "aef2779e5e7d7e54",
+        "name": "",
+        "group": "bf502ea446d0e5ee",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "label": "Freezer 1 Humidity History",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "dd HH:mm",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "auto",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1180,
+        "y": 720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3ee85a3ae5ef3333",
+        "type": "rpi-gpio out",
+        "z": "f9086e97138d9339",
+        "name": "",
+        "pin": "27",
+        "set": true,
+        "level": "0",
+        "freq": "",
+        "out": "out",
+        "bcm": true,
+        "x": 1280,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "79f3e5637d7f627a",
+        "type": "switch",
+        "z": "f9086e97138d9339",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "lt",
+                "v": "80",
+                "vt": "num"
+            },
+            {
+                "t": "gte",
+                "v": "80",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1010,
+        "y": 260,
+        "wires": [
+            [
+                "69f94aaf9b988c69"
+            ],
+            [
+                "fabca9446e0b1a14"
+            ]
+        ]
+    },
+    {
+        "id": "69f94aaf9b988c69",
+        "type": "change",
+        "z": "f9086e97138d9339",
+        "name": "Off",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1130,
+        "y": 240,
+        "wires": [
+            [
+                "3ee85a3ae5ef3333"
+            ]
+        ]
+    },
+    {
+        "id": "fabca9446e0b1a14",
+        "type": "change",
+        "z": "f9086e97138d9339",
+        "name": "On",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1130,
+        "y": 280,
+        "wires": [
+            [
+                "3ee85a3ae5ef3333"
+            ]
+        ]
+    },
+    {
+        "id": "2439cdb47b8c09e9",
+        "type": "file",
+        "z": "f9086e97138d9339",
+        "name": "",
+        "filename": "/home/pi/freezer-test.csv",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 850,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "93dcfa6322e57906",
+        "type": "function",
+        "z": "f9086e97138d9339",
+        "name": "Alarm",
+        "func": "var humidity=msg.payload;\nvar alarm_flag=context.get(\"alarm_flag\");\nif(typeof alarm_flag==\"undefined\")\nalarm_flag=false;\n\nif (humidity>70 && !alarm_flag)\n{\n    alarm_flag=true;\n    msg.alarm=1;\n    context.set(\"alarm_flag\",alarm_flag);\n    return msg;\n}\nif (humidity<=70 && alarm_flag)\n{\n    alarm_flag=false;\n    msg.alarm=0;\n    context.set(\"alarm_flag\",alarm_flag);\n    return msg;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 890,
+        "y": 380,
+        "wires": [
+            [
+                "e391ad2652189e76",
+                "c44bebe9f54dba2c"
+            ]
+        ]
+    },
+    {
+        "id": "d0e7591792357b70",
+        "type": "change",
+        "z": "f9086e97138d9339",
+        "name": "Freezer1 Temp",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload[0].tempFf",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 600,
+        "y": 220,
+        "wires": [
+            [
+                "4366b72239a58622",
+                "2439cdb47b8c09e9"
+            ]
+        ]
+    },
+    {
+        "id": "4366b72239a58622",
+        "type": "ui_gauge",
+        "z": "f9086e97138d9339",
+        "name": "Freezer1 Temp",
+        "group": "bf502ea446d0e5ee",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Freezer1 Temp",
+        "label": "F",
+        "format": "{{value}}",
+        "min": "-10",
+        "max": "100",
+        "colors": [
+            "#0400ff",
+            "#e6e600",
+            "#ff0000"
+        ],
+        "seg1": "20",
+        "seg2": "30",
+        "className": "",
+        "x": 800,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "d6e8f22491220b49",
+        "type": "change",
+        "z": "f9086e97138d9339",
+        "name": "Freezer1 Humidity",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload[0].humidityi",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 610,
+        "y": 280,
+        "wires": [
+            [
+                "a74420e67ff7876d",
+                "79f3e5637d7f627a",
+                "93dcfa6322e57906"
+            ]
+        ]
+    },
+    {
+        "id": "a74420e67ff7876d",
+        "type": "ui_gauge",
+        "z": "f9086e97138d9339",
+        "name": "Freezer1 Humidity",
+        "group": "bf502ea446d0e5ee",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Freezer1 Humidity",
+        "label": "% Humidity",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "100",
+        "colors": [
+            "#00ff11",
+            "#e6e600",
+            "#ff0000"
+        ],
+        "seg1": "20",
+        "seg2": "40",
+        "className": "",
+        "x": 810,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "29f7dbda8c882c7b",
+        "type": "e-mail",
+        "z": "f9086e97138d9339",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "secure": true,
+        "tls": true,
+        "name": "chawn1272@gmail.com",
+        "dname": "Email Send",
+        "x": 1250,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "c44bebe9f54dba2c",
+        "type": "debug",
+        "z": "f9086e97138d9339",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1230,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "e391ad2652189e76",
+        "type": "function",
+        "z": "f9086e97138d9339",
+        "name": "Email Content",
+        "func": "var temp=msg.payload;\nmsg.to=\"chawn1272@gmail.com\";\nmsg.from=\"noreply@gmail.com\";\n\nvar d =new Date();\nvar message=\"\";\nif(msg.alarm)\n{\n    msg.topic=\"High Temperature Alarm\";\n    message=\" High Temperature Alarm temp= \";    \n}\nelse\n{\n    message=\" Temperature now normal temp= \"; \n   msg.topic=\"Temperature Alarm Reset\";\n} \nmsg.payload=\"time:\"+d+message +msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1060,
+        "y": 380,
+        "wires": [
+            [
+                "29f7dbda8c882c7b",
+                "c44bebe9f54dba2c"
+            ]
+        ]
+    },
+    {
+        "id": "126ea320118c22af",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "sessionExpiry": ""
+    },
+    {
+        "id": "6006ea813af8600e",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "database",
+        "name": "",
+        "usetls": false,
+        "tls": "5a1ed586.fc57cc",
+        "influxdbVersion": "1.8-flux",
+        "url": "http://localhost:8086",
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "bf502ea446d0e5ee",
+        "type": "ui_group",
+        "name": "Default",
+        "tab": "ed043c78fabe5aac",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "3e3327aa.370598",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "rpimonitor",
+        "name": "",
+        "usetls": false,
+        "tls": "5a1ed586.fc57cc",
+        "influxdbVersion": "1.8-flux",
+        "url": "http://localhost:8086/",
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "5a1ed586.fc57cc",
+        "type": "tls-config",
+        "name": "local-tls",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "verifyservercert": false
+    },
+    {
+        "id": "ed043c78fabe5aac",
+        "type": "ui_tab",
+        "name": "Temp System",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
