@@ -1,4 +1,4 @@
-#!/home/pi/1Temp/.venv/bin/python3
+#!/home/pi/1TEMP/.venv/bin/python3
 
 from time import sleep, perf_counter
 import board, logging
@@ -9,23 +9,16 @@ import sys, socket, os, json     # Used for mqtt
 from pathlib import Path         # Used for mqtt
 from subprocess import check_output # alternate method to see IP address
 
-class Freezer:
-
-    def __init__(self, led_pin, board_pin):
-        self.led = LED(led_pin)
-        self.dht = adafruit_dht.DHT11(board_pin, use_pulseio=False)
-
-
 #====== IP ADDRESS CHECK ==============#
 # Getting IP address. IP address will change over time and if Pi is offline vs online. 
 
 def get_ipGP():
-    
-    routes = json.loads(os.popen("ip -j -4 route").read())
     ip = "not connected"
-    if len(routes) and routes[0]["dev"] == "wlan0":
-        ip = routes[0]['prefsrc']
-
+    routes = json.loads(os.popen("ip -j -4 route").read())
+    for r in routes:
+        if r.get("dev") == "wlan0" and r.get("prefsrc"):
+            ip = r['prefsrc']
+            continue
     return ip
 
 def check_connection():
@@ -33,8 +26,10 @@ def check_connection():
     logging.info(check_output(['hostname', '-I'])) # Alternate way to display IP for confirmation
     hostname = socket.gethostname()
     ip3 = get_ipGP()  # Method by GPayne
-    connected = ip3 != 'not connected'
-    
+    if ip3 == 'not connected':
+        connected = False
+    else:
+        connected = True
     return connected, hostname, ip3
 
 #====== MQTT CALLBACK FUNCTIONS ==========#
@@ -106,14 +101,11 @@ def main():
                                               # Set to CRITICAL to turn off
 
     #==== HARDWARE SETUP ===============# 
-
-    freezers = {
-        1: Freezer(led_pin=27, board_pin=board.D18)
-    }
+    led1 = LED(27)
+    freezer1DHT = adafruit_dht.DHT22(board.D18, use_pulseio=False) # pulseio false for RPi
 
     #====   SETUP MQTT =================#
     # Check for wifi connection. Using hostname for MQTT_SERVER so IP address is not necessary but can be useful.
-
     connected, hostname, ip_address= check_connection()
     if connected:
         logging.info("Connected first time")
@@ -164,7 +156,7 @@ def main():
 
     #==== MAIN LOOP ====================#
     # MQTT setup is successful. Initialize dictionaries and start the main loop.
-    freezers[1].led.on()
+    led1.on()
     outgoingD, incomingD = {}, {}
     outgoingD['data'] = {}
     outgoingD['ipAddr'] = check_connection()
@@ -178,19 +170,17 @@ def main():
             if (perf_counter() - t0_sec) > msginterval:
                 t0_sec = perf_counter()
                 try:
-                    for idx, freezer in freezers.items():
-                        temperature_c = freezer.dht.temperature
-                        temperature_f = temperature_c * (9 / 5) + 32
-                        humidity = freezer.dht.humidity
-                        outgoingD['data']['freezeri'] = idx
-                        outgoingD['data']['tempFf'] = float(temperature_f)
-                        outgoingD['data']['humidityi'] = int(humidity)
-                        mqtt_client.publish(MQTT_PUB_DATA_TOPIC, json.dumps(outgoingD['data']))  # publish data
-                        logging.debug(
-                            "Temp feezer{}: {:.1f} F / {:.1f} C    Humidity: {}% ".format(
-                                idx, temperature_f, temperature_c, humidity
-                            )
+                    temperature_c = freezer1DHT.temperature
+                    temperature_f = temperature_c * (9 / 5) + 32
+                    humidity = freezer1DHT.humidity
+                    outgoingD['data']['tempFf'] = float(temperature_f)
+                    outgoingD['data']['humidityi'] = int(humidity)
+                    mqtt_client.publish(MQTT_PUB_DATA_TOPIC, json.dumps(outgoingD['data']))  # publish data
+                    logging.debug(
+                        "Temp: {:.1f} F / {:.1f} C    Humidity: {}% ".format(
+                            temperature_f, temperature_c, humidity
                         )
+                    )
                 except RuntimeError as error:
                     logging.info(error.args[0])
                     continue
