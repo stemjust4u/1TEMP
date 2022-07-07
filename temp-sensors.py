@@ -113,7 +113,7 @@ def main():
     }
 
     #====   SETUP MQTT =================#
-    # Check for wifi connection. Using hostname for MQTT_SERVER so IP address is not necessary but can be useful.
+    # Check for wifi connection. Using hostname for MQTT_SERVER so IP address is not necessary but IP add can still be useful.
 
     connected, hostname, ip_address= check_connection()
     if connected:
